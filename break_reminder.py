@@ -28,7 +28,7 @@ class Example(wx.Frame):
         self.message = msg
     def InitUI(self):
 
-        wx.CallLater(1000, self.ShowMessage)
+        # wx.CallLater(1000, self.ShowMessage)
 
         self.SetSize((300, 200))
         self.SetTitle('Time to make a break')
@@ -40,6 +40,7 @@ class Example(wx.Frame):
 
 
         self.Centre()
+        self.ToggleWindowStyle(wx.STAY_ON_TOP)
 
     def BreakIsOff(self, event):
         global BREAK_IS_ON
@@ -57,7 +58,7 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
         self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_down)
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update, self.timer)
-        self.timer.Start(1000)
+        self.timer.Start(20000)
         
 
     def update(self, event):
@@ -69,7 +70,8 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
             return
             
         BREAK_IS_ON = True    
-        ex = Example(None)    
+        ex = Example(None) #, style=wx.SIMPLE_BORDER | wx.STAY_ON_TOP | wx.FRAME_NO_TASKBAR)
+
         ex.setMessage( time.ctime() )
         ex.Show()    
 
