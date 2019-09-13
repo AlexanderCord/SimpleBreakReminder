@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+"""
+Simple Break Reminder
 
+Author: Ershov Alexander 
+Created: 09/11/2019
+
+"""
 import wx
 import wx.adv
 import time
+import os
+import configparser
 
 
-TRAY_TOOLTIP = 'System Tray Demo'
-TRAY_ICON = 'D:\work\python\wxPython-examples-master\cctv.png'
+TRAY_TOOLTIP = 'Simple Break Reminder'
+TRAY_ICON = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'break_reminder_icon.png'
 BREAK_IS_ON = False
+CONFIG_FILE = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'break_reminder.ini'
 
+# create 
 def create_menu_item(menu, label, func):
     item = wx.MenuItem(menu, -1, label)
     menu.Bind(wx.EVT_MENU, func, id=item.GetId())
@@ -17,10 +26,10 @@ def create_menu_item(menu, label, func):
     return item
 
 
-class Example(wx.Frame):
+class BreakDialog(wx.Frame):
 
     def __init__(self, *args, **kwargs):
-        super(Example, self).__init__(*args, **kwargs)
+        super(BreakDialog, self).__init__(*args, **kwargs)
         self.message = None
         self.InitUI()
 
@@ -51,6 +60,8 @@ class Example(wx.Frame):
         wx.MessageBox('Time to make a break, my friend!' + self.message, 'Info',
             wx.OK | wx.ICON_INFORMATION)
 
+#from pprint import pprint
+
 class TaskBarIcon2(wx.adv.TaskBarIcon):
     def __init__(self):
         super(TaskBarIcon2, self).__init__()
@@ -58,7 +69,15 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
         self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_down)
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update, self.timer)
-        self.timer.Start(20000)
+        
+        
+        config = configparser.ConfigParser()
+        config.read(CONFIG_FILE)
+        # pprint(config)
+        timeout = int(config['settings']['timeout'])
+        print(str(timeout))
+        
+        self.timer.Start(timeout * 1000)
         
 
     def update(self, event):
@@ -70,7 +89,7 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
             return
             
         BREAK_IS_ON = True    
-        ex = Example(None) #, style=wx.SIMPLE_BORDER | wx.STAY_ON_TOP | wx.FRAME_NO_TASKBAR)
+        ex = BreakDialog(None) #, style=wx.SIMPLE_BORDER | wx.STAY_ON_TOP | wx.FRAME_NO_TASKBAR)
 
         ex.setMessage( time.ctime() )
         ex.Show()    
@@ -78,7 +97,7 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
 
     def CreatePopupMenu(self):
         menu = wx.Menu()
-        create_menu_item(menu, 'Say Hello', self.on_hello)
+        create_menu_item(menu, 'About', self.on_hello)
         menu.AppendSeparator()
         create_menu_item(menu, 'Exit', self.on_exit)
         return menu
@@ -91,7 +110,7 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
         print('Tray icon was left-clicked.')
 
     def on_hello(self, event):
-        print('Hello, world!')
+        print('Simple Break Reminder v1.0')
 
     def on_exit(self, event):
         wx.CallAfter(self.Destroy)
