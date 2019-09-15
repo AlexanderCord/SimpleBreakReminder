@@ -77,7 +77,7 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
         timeout = int(config['settings']['timeout'])
         print(str(timeout))
         
-        self.timer.Start(timeout * 1000)
+        self.timer.Start(timeout * 60 * 1000)
         
 
     def update(self, event):
