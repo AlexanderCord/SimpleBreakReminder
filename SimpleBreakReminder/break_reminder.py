@@ -33,8 +33,12 @@ class BreakDialog(wx.Frame):
         self.message = None
         self.InitUI()
 
+    def setParentApp(self, parent_app):
+        self.parent_app = parent_app
+
     def setMessage(self, msg):
         self.message = msg
+        
     def InitUI(self):
 
         # wx.CallLater(1000, self.ShowMessage)
@@ -42,14 +46,35 @@ class BreakDialog(wx.Frame):
         self.SetSize((300, 200))
         self.SetTitle('Time to make a break')
         
-        panel = wx.Panel(self)
-        
+        panel = wx.Panel(self)        
+
+        hbox = wx.BoxSizer()
+        sizer = wx.GridSizer(2, 2, 2, 2)
+
         btn1 = wx.Button(panel, label='I am done')
+        btn2 = wx.Button(panel, label='Reset time')
+
+        sizer.AddMany([btn1, btn2])
+
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
+        btn2.Bind(wx.EVT_BUTTON, self.ResetTimer)
+
+        hbox.Add(sizer, 0, wx.ALL, 15)
+        panel.SetSizer(hbox)
+
+
+        self.SetSize((300, 200))
 
 
         self.Centre()
         self.ToggleWindowStyle(wx.STAY_ON_TOP)
+
+    def ResetTimer(self, event):
+        
+        print("Trying to reset the time")
+        self.parent_app.reset_time()
+
+
 
     def BreakIsOff(self, event):
         global BREAK_IS_ON
@@ -70,15 +95,21 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update, self.timer)
         
+        self.reset_time()
         
+
+    def reset_time(self):
+    
+        print("Timer is reset")
+         
         config = configparser.ConfigParser()
         config.read(CONFIG_FILE)
         # pprint(config)
-        timeout = int(config['settings']['timeout'])
-        print(str(timeout))
+        self.timeout = int(config['settings']['timeout'])
+        print(str(self.timeout))
         
-        self.timer.Start(timeout * 60 * 1000)
-        
+        self.timer.Start(self.timeout * 60 * 1000)
+
 
     def update(self, event):
         global BREAK_IS_ON
@@ -90,14 +121,14 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
             
         BREAK_IS_ON = True    
         ex = BreakDialog(None) #, style=wx.SIMPLE_BORDER | wx.STAY_ON_TOP | wx.FRAME_NO_TASKBAR)
-
+        ex.setParentApp(self)
         ex.setMessage( time.ctime() )
         ex.Show()    
 
 
     def CreatePopupMenu(self):
         menu = wx.Menu()
-        create_menu_item(menu, 'About', self.on_hello)
+        create_menu_item(menu, 'Make a break', self.on_preferred_break)
         menu.AppendSeparator()
         create_menu_item(menu, 'Exit', self.on_exit)
         return menu
@@ -109,8 +140,9 @@ class TaskBarIcon2(wx.adv.TaskBarIcon):
     def on_left_down(self, event):
         print('Tray icon was left-clicked.')
 
-    def on_hello(self, event):
-        print('Simple Break Reminder v1.0')
+    def on_preferred_break(self, event):
+        print('Break on-demand')
+        self.update(event)
 
     def on_exit(self, event):
         wx.CallAfter(self.Destroy)
