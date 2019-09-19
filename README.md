@@ -52,14 +52,13 @@ should be at least 4.0.6
 
 
 ### Running
-```
 - Clone to a specific directory
 - Run cmd/terminal
 - Run 
 ```
 python3 %path_to_app%/SimpleBreakReminder/break_reminder.py
 ```
-```
+
 
 
 
