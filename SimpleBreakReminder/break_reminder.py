@@ -66,7 +66,12 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 
         self.showTimer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.ShowTime, self.showTimer)
-        self.showTimer.Start(5000)
+        self.showTimer.Start(1000)
+
+    def StopTimer(self):
+        print("Timers are stopped")
+        self.timer.Stop()
+        self.showTimer.Stop()
         
     def ShowTime(self, event):
         print("Current time")
@@ -85,7 +90,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         
         print("\nupdated: ")
         print(time.ctime())
-        self.showTimer.Stop()
+        
         self.OnTaskBarActivate(event)
 
 
@@ -121,6 +126,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 
 
     def OnTaskBarActivate(self, evt):
+        self.StopTimer()
         if self.frame.IsIconized():
             self.frame.Iconize(False)
         if not self.frame.IsShown():
@@ -162,12 +168,12 @@ class MainFrame(wx.Frame):
         sizer = wx.GridSizer(2, 2, 2, 2)
 
         btn1 = wx.Button(panel, label='End the break')
-        btn2 = wx.Button(panel, label='Reset timer')
+        btn2 = wx.Button(panel, label='Exit')
         
         sizer.AddMany([btn1, btn2])
 
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
-        btn2.Bind(wx.EVT_BUTTON, self.ResetTimer)
+        btn2.Bind(wx.EVT_BUTTON, self.QuitApp)
 
         hbox.Add(sizer, 0, wx.ALL, 15)
         panel.SetSizer(hbox)
@@ -179,13 +185,14 @@ class MainFrame(wx.Frame):
         self.Centre()
         self.ToggleWindowStyle(wx.STAY_ON_TOP)
         
-    def ResetTimer(self, event):
-        self.parentWin.StartTimer()
-        return
+    def QuitApp(self, event):
+        exit()
 
 
 
     def BreakIsOff(self, event):
+        self.parentWin.StartTimer()
+
         self.Hide()
 
 
