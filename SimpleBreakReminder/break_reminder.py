@@ -67,7 +67,12 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 
         self.showTimer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.ShowTime, self.showTimer)
-        self.showTimer.Start(5000)
+        self.showTimer.Start(1000)
+
+    def StopTimer(self):
+        print("Timers are stopped")
+        self.timer.Stop()
+        self.showTimer.Stop()
         
     def ShowTime(self, event):
         print("Current time")
@@ -86,7 +91,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         
         print("\nupdated: ")
         print(time.ctime())
-        self.showTimer.Stop()
+        
         self.OnTaskBarActivate(event)
 
 
@@ -100,7 +105,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         the base class takes care of the rest.
         """
         menu = wx.Menu()
-        menu.Append(self.TBMENU_RESTORE, "Make a Break")
+        menu.Append(self.TBMENU_RESTORE, "Take a Break")
         menu.Append(self.TBMENU_CLOSE,   "Exit")
         return menu
 
@@ -122,6 +127,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 
 
     def OnTaskBarActivate(self, evt):
+        self.StopTimer()
         if self.frame.IsIconized():
             self.frame.Iconize(False)
         if not self.frame.IsShown():
@@ -155,7 +161,7 @@ class MainFrame(wx.Frame):
     def InitUI(self):
 
         self.SetSize((300, 200))
-        self.SetTitle('Time to make a break')
+        self.SetTitle('Time to take a break')
         
         panel = wx.Panel(self)        
         self.defaultColor = self.GetBackgroundColour()
@@ -164,12 +170,12 @@ class MainFrame(wx.Frame):
         sizer = wx.GridSizer(2, 2, 2, 2)
 
         btn1 = wx.Button(panel, label='End the break')
-        btn2 = wx.Button(panel, label='Reset timer')
-         
+        btn2 = wx.Button(panel, label='Exit')
+        
         sizer.AddMany([btn1, btn2])
 
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
-        btn2.Bind(wx.EVT_BUTTON, self.ResetTimer)
+        btn2.Bind(wx.EVT_BUTTON, self.QuitApp)
 
         
         hbox.Add(sizer, 0, wx.ALL, 15)
@@ -186,13 +192,14 @@ class MainFrame(wx.Frame):
     def onToggleDark(self, event):
         darkMode.darkMode(self, self.defaultColor)
         
-    def ResetTimer(self, event):
-        self.parentWin.StartTimer()
-        return
+    def QuitApp(self, event):
+        exit()
 
 
 
     def BreakIsOff(self, event):
+        self.parentWin.StartTimer()
+
         self.Hide()
 
 
