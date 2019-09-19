@@ -1,7 +1,7 @@
 # utils
 
 ## SimpleBreakReminder 
-
+### About
 Simple app that runs in your tray icon, reminding you to make a break.
 
 It also shows, how much time you have before the break, in the tooltip for tray icon.
@@ -24,7 +24,7 @@ Tested on
 - MacOs (MBP)
 - Windows 10 (laptop)
 
-Windows 10 installation
+### Installation
 - Download Python 3.7.4 https://www.python.org/downloads/
 - In cmd / terminal run
 
@@ -32,7 +32,7 @@ Windows 10 installation
 pip3 install wxPython
 ```
 
-- Check wxPython version
+- Check wxPython version in Python 3 console
 
 ```
 python3
@@ -49,4 +49,17 @@ wx.version()
 ```
 
 should be at least 4.0.6 
+
+
+### Running
+```
+- Clone to a specific directory
+- Run cmd/terminal
+- Run 
+```
+python3 %path_to_app%/SimpleBreakReminder/break_reminder.py
+```
+```
+
+
 
