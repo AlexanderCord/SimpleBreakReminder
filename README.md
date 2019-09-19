@@ -14,7 +14,7 @@ Config is simple ini file, timeout should be set in minutes
 
 When time comes, it shows small always-on-top window with a message to make a pause from you work.
 
-<img src="https://raw.githubusercontent.com/AlexanderCord/SimpleBreakReminder/master/screenshot1.png" width="600">
+<img src="https://raw.githubusercontent.com/AlexanderCord/SimpleBreakReminder/master/screenshot1.png" width="550">
 
 
 Works on Python 3.7.4
