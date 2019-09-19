@@ -104,7 +104,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         the base class takes care of the rest.
         """
         menu = wx.Menu()
-        menu.Append(self.TBMENU_RESTORE, "Make a Break")
+        menu.Append(self.TBMENU_RESTORE, "Take a Break")
         menu.Append(self.TBMENU_CLOSE,   "Exit")
         return menu
 
@@ -160,7 +160,7 @@ class MainFrame(wx.Frame):
     def InitUI(self):
 
         self.SetSize((300, 200))
-        self.SetTitle('Time to make a break')
+        self.SetTitle('Time to take a break')
         
         panel = wx.Panel(self)        
 
