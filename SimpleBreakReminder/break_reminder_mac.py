@@ -26,14 +26,17 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
     TBMENU_CHANGE  = wx.NewIdRef()
     TBMENU_REMOVE  = wx.NewIdRef()
 
+    def GetIcon(self):
+        icon = wx.Icon(wx.Bitmap(TRAY_ICON))
+        return icon
+        
     def __init__(self, frame):
         wx.adv.TaskBarIcon.__init__(self)
         self.frame = frame
 
         # Set the image
-        icon = wx.Icon(wx.Bitmap(TRAY_ICON))
-        self.SetIcon(icon, TRAY_TOOLTIP)
-        
+
+        icon = self.GetIcon()
         self.SetIcon(icon, "Simple Break Reminder")
         self.imgidx = 1
 
@@ -46,24 +49,43 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         self.Bind(wx.EVT_TIMER, self.MakeBreak, self.timer)
         self.StartTimer()
 
+        
+
     def StartTimer(self):
         global CONFIG_FILE
-        
+
+
         print("Trying to reset the time")
         config = configparser.ConfigParser()
         config.read(CONFIG_FILE)
         self.timeout = int(config['settings']['timeout'])
         print(str(self.timeout))
         
+        self.timeStarted = time.time()
         self.timer.Start(1000*60*self.timeout)
-        
 
+        self.showTimer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.ShowTime, self.showTimer)
+        self.showTimer.Start(5000)
+        
+    def ShowTime(self, event):
+        print("Current time")
+        print(time.ctime())
+
+        print("Minutes left before break")
+        timeLeft = str( int( ( self.timeout*60 +  int(self.timeStarted) - time.time())/60 ) )
+        print(timeLeft)
+        icon = self.GetIcon()
+        self.SetIcon(icon, "Simple Break Reminder [" + timeLeft + " min before break]")
+
+        
         
 
     def MakeBreak(self, event):
         
         print("\nupdated: ")
         print(time.ctime())
+        self.showTimer.Stop()
         self.OnTaskBarActivate(event)
 
 
@@ -141,7 +163,7 @@ class MainFrame(wx.Frame):
 
         btn1 = wx.Button(panel, label='I am done')
         btn2 = wx.Button(panel, label='Reset time')
-
+        
         sizer.AddMany([btn1, btn2])
 
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
