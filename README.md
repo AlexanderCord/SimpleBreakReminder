@@ -1,6 +1,6 @@
 # utils
 
-== SimpleBreakReminder ==
+## SimpleBreakReminder 
 
 Simple app that runs in your tray icon, reminding you to make a break.
 Configed by ini file, timeout should be set in minutes
