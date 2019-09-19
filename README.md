@@ -27,6 +27,11 @@ Tested on
 ### Installation
 - Download Python 3.7.4 and install it https://www.python.org/downloads/
 - In cmd / terminal run
+```
+pip3 install ObjectListView
+```
+
+Then
 
 ```
 pip3 install wxPython
