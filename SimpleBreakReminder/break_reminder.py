@@ -8,6 +8,7 @@ Created: 09/19/2019
 
 """
 import wx
+import darkMode
 import wx.adv
 import time
 import os
@@ -157,27 +158,33 @@ class MainFrame(wx.Frame):
         self.SetTitle('Time to make a break')
         
         panel = wx.Panel(self)        
-
+        self.defaultColor = self.GetBackgroundColour()
+        
         hbox = wx.BoxSizer()
         sizer = wx.GridSizer(2, 2, 2, 2)
 
         btn1 = wx.Button(panel, label='End the break')
         btn2 = wx.Button(panel, label='Reset timer')
-        
+         
         sizer.AddMany([btn1, btn2])
 
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
         btn2.Bind(wx.EVT_BUTTON, self.ResetTimer)
 
+        
         hbox.Add(sizer, 0, wx.ALL, 15)
         panel.SetSizer(hbox)
 
 
         self.SetSize((300, 200))
-
+        
 
         self.Centre()
         self.ToggleWindowStyle(wx.STAY_ON_TOP)
+        self.onToggleDark(self)
+        
+    def onToggleDark(self, event):
+        darkMode.darkMode(self, self.defaultColor)
         
     def ResetTimer(self, event):
         self.parentWin.StartTimer()
