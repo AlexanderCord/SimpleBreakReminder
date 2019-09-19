@@ -25,7 +25,7 @@ Tested on
 - Windows 10 (laptop)
 
 ### Installation
-- Download Python 3.7.4 https://www.python.org/downloads/
+- Download Python 3.7.4 and install it https://www.python.org/downloads/
 - In cmd / terminal run
 
 ```
