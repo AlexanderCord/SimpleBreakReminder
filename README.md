@@ -5,7 +5,7 @@
 Simple app that runs in your tray icon, reminding you to make a break.
 
 It also shows, how much time you have before the break, in the tooltip for tray icon.
-<img src="https://raw.githubusercontent.com/AlexanderCord/SimpleBreakReminder/master/screenshot3.png" width="400">
+<img src="https://raw.githubusercontent.com/AlexanderCord/SimpleBreakReminder/master/screenshot2.png" width="400">
 
 
 
