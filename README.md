@@ -58,11 +58,15 @@ pip3 install ObjectListView
 
 ### Running
 - Clone to a specific directory
+- Set the variables in settings.ini - timeout (in minutes), and whether you want to log breaks or not. If you want to log taking breaks, create empty logs directory in the folder containing the app
+- Create directory 'logs'
 - Run cmd/terminal
 - Run 
 ```
 python3 %path_to_app%/SimpleBreakReminder/break_reminder.py
 ```
+
+
 
 
 

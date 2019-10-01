@@ -13,13 +13,17 @@ import wx.adv
 import time
 import os
 import configparser
+import datetime
 
 
 TRAY_TOOLTIP = 'Simple Break Reminder'
 TRAY_ICON = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'break_reminder_icon.png'
 CONFIG_FILE = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'break_reminder.ini'
 
+LOGS_DIR = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'logs' + os.sep
 
+BREAK_STARTED = 1
+BREAK_ENDED = 0
 
 class SimpleBreakReminder(wx.adv.TaskBarIcon):
     TBMENU_RESTORE = wx.NewIdRef()
@@ -53,9 +57,6 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         
 
     def StartTimer(self):
-        global CONFIG_FILE
-
-
         print("Trying to reset the time")
         config = configparser.ConfigParser()
         config.read(CONFIG_FILE)
@@ -85,12 +86,26 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         self.SetIcon(icon, "Simple Break Reminder [" + timeLeft + " min before break]")
 
         
+    def IsLoggingOn(self):
+        config = configparser.ConfigParser()
+        config.read(CONFIG_FILE)
+        logging = int(config['settings']['logs'])
+        if logging == 1:
+            print("Logging is on")
+            return True
+        else:
+            print("Logging is off")
+            return False
+        
+            
         
 
     def MakeBreak(self, event):
         
         print("\nupdated: ")
         print(time.ctime())
+        
+        
         
         self.OnTaskBarActivate(event)
 
@@ -126,8 +141,33 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         return icon
 
 
+    def LogBreak(self, breakStarted = BREAK_STARTED):
+    
+        if self.IsLoggingOn() == False:
+            return 
+            
+        now = datetime.datetime.now()
+        print ("Current date and time : ")
+        
+        currentMoment = now.strftime("%Y-%m-%d %H:%M:%S")
+        print(currentMoment)
+        fileName = LOGS_DIR + now.strftime("%Y-%m-%d") + '.log'
+        
+        if os.path.exists(fileName):
+            append_write = 'a' # append if already exists
+        else:
+            append_write = 'w' # make a new file if not
+            
+            
+        log = open(fileName,append_write)
+        # datetime;1}0 - 1 if break started, 0 if break ended
+        log.write(currentMoment + ";" + str(breakStarted) + "\n")
+        log.close()    
+
     def OnTaskBarActivate(self, evt):
+        print("Taking a break");
         self.StopTimer()
+        self.LogBreak( BREAK_STARTED )
         if self.frame.IsIconized():
             self.frame.Iconize(False)
         if not self.frame.IsShown():
@@ -198,6 +238,7 @@ class MainFrame(wx.Frame):
 
 
     def BreakIsOff(self, event):
+        self.parentWin.LogBreak(BREAK_ENDED)
         self.parentWin.StartTimer()
 
         self.Hide()
