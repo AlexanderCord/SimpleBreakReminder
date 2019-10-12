@@ -56,11 +56,14 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 
         
 
-    def StartTimer(self):
+    def StartTimer(self, timeout = None):
         print("Trying to reset the time")
-        config = configparser.ConfigParser()
-        config.read(CONFIG_FILE)
-        self.timeout = int(config['settings']['timeout'])
+        if timeout is None:
+            config = configparser.ConfigParser()
+            config.read(CONFIG_FILE)
+            self.timeout = int(config['settings']['timeout'])
+        else:
+            self.timeout = timeout
         print(str(self.timeout))
         
         self.timeStarted = time.time()
@@ -200,29 +203,31 @@ class MainFrame(wx.Frame):
 
     def InitUI(self):
 
-        self.SetSize((300, 200))
+        self.SetSize((400, 200))
         self.SetTitle('Time to take a break')
         
         panel = wx.Panel(self)        
         self.defaultColor = self.GetBackgroundColour()
         
         hbox = wx.BoxSizer()
-        sizer = wx.GridSizer(2, 2, 2, 2)
+        sizer = wx.GridSizer(1, 3, 10, 10)
 
         btn1 = wx.Button(panel, label='End the break')
-        btn2 = wx.Button(panel, label='Exit')
+        btn2 = wx.Button(panel, label='Remind in 5 min')
+        btn3 = wx.Button(panel, label='Exit')
         
-        sizer.AddMany([btn1, btn2])
+        sizer.AddMany([btn1, btn2, btn3])
 
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
-        btn2.Bind(wx.EVT_BUTTON, self.QuitApp)
+        btn2.Bind(wx.EVT_BUTTON, self.RemindLater)
+        btn3.Bind(wx.EVT_BUTTON, self.QuitApp)
 
         
         hbox.Add(sizer, 0, wx.ALL, 15)
         panel.SetSizer(hbox)
 
 
-        self.SetSize((300, 200))
+        self.SetSize((400, 200))
         
 
         self.Centre()
@@ -235,6 +240,11 @@ class MainFrame(wx.Frame):
     def QuitApp(self, event):
         exit()
 
+    def RemindLater(self, event):
+        self.parentWin.LogBreak(BREAK_ENDED)
+        self.parentWin.StartTimer(5)
+
+        self.Hide()
 
 
     def BreakIsOff(self, event):
