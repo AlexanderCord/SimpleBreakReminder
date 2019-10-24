@@ -24,7 +24,8 @@ LOGS_DIR = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'logs' + os.sep
 
 BREAK_STARTED = 1
 BREAK_ENDED = 0
-
+BREAK_POSTPONED = 2
+# @todo: refactor. Class structure redisgn with SOLID principles
 class SimpleBreakReminder(wx.adv.TaskBarIcon):
     TBMENU_RESTORE = wx.NewIdRef()
     TBMENU_CLOSE   = wx.NewIdRef()
@@ -144,7 +145,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         return icon
 
 
-    def LogBreak(self, breakStarted = BREAK_STARTED):
+    def LogBreak(self, breakStarted = BREAK_STARTED, breakLength = -1):
     
         if self.IsLoggingOn() == False:
             return 
@@ -164,7 +165,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
             
         log = open(fileName,append_write)
         # datetime;1}0 - 1 if break started, 0 if break ended
-        log.write(currentMoment + ";" + str(breakStarted) + "\n")
+        log.write(currentMoment + ";" + str(breakStarted) + ";" + str(breakLength) +  "\n")
         log.close()    
 
     def OnTaskBarActivate(self, evt):
@@ -178,7 +179,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         
         self.frame.Raise()
         self.frame.SetParentWin(self)
-
+        self.frame.StartTimeoutTimer()
 
 
     def OnTaskBarClose(self, evt):
@@ -201,6 +202,28 @@ class MainFrame(wx.Frame):
         self.tbicon.Destroy()
         evt.Skip()
 
+    def StartTimeoutTimer(self):
+        self.timeoutTimer = wx.Timer(self)
+        self.timeoutStarted = time.time()
+        self.Bind(wx.EVT_TIMER, self.UpdateTimeoutLabel, self.timeoutTimer)
+        self.timeoutTimer.Start(1000)
+                
+
+    def UpdateTimeoutLabel(self, event):
+        print("Current time")
+        print(time.ctime())
+
+        timePassed =  int( ( time.time() - int(self.timeoutStarted) ) ) 
+        self.timePassed = timePassed
+        
+        self.displayTimeoutLabel.SetLabel("Minutes passed since the break began: %d" % int(timePassed/60))
+        print("Minutes after break started: %d" % int(timePassed/60))
+
+        
+    def StopTimeoutTimer(self):
+        self.timeoutTimer.Stop()
+    
+
     def InitUI(self):
 
         self.SetSize((400, 200))
@@ -210,13 +233,16 @@ class MainFrame(wx.Frame):
         self.defaultColor = self.GetBackgroundColour()
         
         hbox = wx.BoxSizer()
-        sizer = wx.GridSizer(1, 3, 10, 10)
+        sizer = wx.GridSizer(2, 3, 10, 10)
 
         btn1 = wx.Button(panel, label='End the break')
         btn2 = wx.Button(panel, label='Remind in 5 min')
         btn3 = wx.Button(panel, label='Exit')
         
-        sizer.AddMany([btn1, btn2, btn3])
+        # Showing how much time has passed since the break has begun
+        self.displayTimeoutLabel = wx.StaticText(panel, -1, "Timeout has just started", style=wx.ALIGN_CENTRE)
+
+        sizer.AddMany([btn1, btn2, btn3, self.displayTimeoutLabel])
 
         btn1.Bind(wx.EVT_BUTTON, self.BreakIsOff)
         btn2.Bind(wx.EVT_BUTTON, self.RemindLater)
@@ -241,14 +267,16 @@ class MainFrame(wx.Frame):
         exit()
 
     def RemindLater(self, event):
-        self.parentWin.LogBreak(BREAK_ENDED)
+        self.StopTimeoutTimer()
+        self.parentWin.LogBreak(BREAK_POSTPONED, self.timePassed)
         self.parentWin.StartTimer(5)
 
         self.Hide()
 
 
     def BreakIsOff(self, event):
-        self.parentWin.LogBreak(BREAK_ENDED)
+        self.StopTimeoutTimer()
+        self.parentWin.LogBreak(BREAK_ENDED, self.timePassed)
         self.parentWin.StartTimer()
 
         self.Hide()
