@@ -25,6 +25,9 @@ LOGS_DIR = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'logs' + os.sep
 BREAK_STARTED = 1
 BREAK_ENDED = 0
 BREAK_POSTPONED = 2
+
+DEBUG_OUTPUT=False
+
 # @todo: refactor. Class structure redisgn with SOLID principles
 class SimpleBreakReminder(wx.adv.TaskBarIcon):
     TBMENU_RESTORE = wx.NewIdRef()
@@ -58,14 +61,14 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         
 
     def StartTimer(self, timeout = None):
-        print("Trying to reset the time")
+        DEBUG_OUTPUT and print("Trying to reset the time")
         if timeout is None:
             config = configparser.ConfigParser()
             config.read(CONFIG_FILE)
             self.timeout = int(config['settings']['timeout'])
         else:
             self.timeout = timeout
-        print(str(self.timeout))
+        DEBUG_OUTPUT and print(str(self.timeout))
         
         self.timeStarted = time.time()
         self.timer.Start(1000*60*self.timeout)
@@ -75,17 +78,17 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         self.showTimer.Start(1000)
 
     def StopTimer(self):
-        print("Timers are stopped")
+        DEBUG_OUTPUT and print("Timers are stopped")
         self.timer.Stop()
         self.showTimer.Stop()
         
     def ShowTime(self, event):
-        print("Current time")
-        print(time.ctime())
+        DEBUG_OUTPUT and print("Current time")
+        DEBUG_OUTPUT and print(time.ctime())
 
-        print("Minutes left before break")
+        DEBUG_OUTPUT and print("Minutes left before break")
         timeLeft = str( int( ( self.timeout*60 +  int(self.timeStarted) - time.time())/60 ) )
-        print(timeLeft)
+        DEBUG_OUTPUT and print(timeLeft)
         icon = self.GetIcon()
         self.SetIcon(icon, "Simple Break Reminder [" + timeLeft + " min before break]")
 
@@ -95,10 +98,10 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         config.read(CONFIG_FILE)
         logging = int(config['settings']['logs'])
         if logging == 1:
-            print("Logging is on")
+            DEBUG_OUTPUT and print("Logging is on")
             return True
         else:
-            print("Logging is off")
+            DEBUG_OUTPUT and print("Logging is off")
             return False
         
             
@@ -106,8 +109,8 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 
     def MakeBreak(self, event):
         
-        print("\nupdated: ")
-        print(time.ctime())
+        DEBUG_OUTPUT and print("\nupdated: ")
+        DEBUG_OUTPUT and print(time.ctime())
         
         
         
@@ -151,10 +154,10 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
             return 
             
         now = datetime.datetime.now()
-        print ("Current date and time : ")
+        DEBUG_OUTPUT and print("Current date and time : ")
         
         currentMoment = now.strftime("%Y-%m-%d %H:%M:%S")
-        print(currentMoment)
+        DEBUG_OUTPUT and print(currentMoment)
         fileName = LOGS_DIR + now.strftime("%Y-%m-%d") + '.log'
         
         if os.path.exists(fileName):
@@ -169,7 +172,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
         log.close()    
 
     def OnTaskBarActivate(self, evt):
-        print("Taking a break");
+        DEBUG_OUTPUT and print("Taking a break");
         self.StopTimer()
         self.LogBreak( BREAK_STARTED )
         if self.frame.IsIconized():
@@ -190,7 +193,7 @@ class SimpleBreakReminder(wx.adv.TaskBarIcon):
 class MainFrame(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, title="SimpleBreakReminder")
-        print("Showing main frame")
+        DEBUG_OUTPUT and print("Showing main frame")
         self.tbicon = SimpleBreakReminder(self)
         self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
         self.InitUI()
@@ -210,14 +213,14 @@ class MainFrame(wx.Frame):
                 
 
     def UpdateTimeoutLabel(self, event):
-        print("Current time")
-        print(time.ctime())
+        DEBUG_OUTPUT and print("Current time")
+        DEBUG_OUTPUT and print(time.ctime())
 
         timePassed =  int( ( time.time() - int(self.timeoutStarted) ) ) 
         self.timePassed = timePassed
         
         self.displayTimeoutLabel.SetLabel("Minutes passed since the break began: %d" % int(timePassed/60))
-        print("Minutes after break started: %d" % int(timePassed/60))
+        DEBUG_OUTPUT and print("Minutes after break started: %d" % int(timePassed/60))
 
         
     def StopTimeoutTimer(self):
