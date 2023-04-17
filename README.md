@@ -21,7 +21,7 @@ Works on Python 3.7.4+
 and wxPython 4.0.6 (phoenix)
 
 Tested on
-- MacOs Monterey ()
+- MacOs Monterey 
 - Windows 10 (laptop)
 
 ### Installation for MacOs
