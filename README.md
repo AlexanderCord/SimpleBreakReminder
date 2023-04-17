@@ -17,53 +17,27 @@ When time comes, it shows small always-on-top window with a message to make a pa
 <img src="https://raw.githubusercontent.com/AlexanderCord/SimpleBreakReminder/master/screenshot1.png" width="550">
 
 
-Works on Python 3.7.4
+Works on Python 3.7.4+
 and wxPython 4.0.6 (phoenix)
 
 Tested on
-- MacOs (MBP)
+- MacOs Monterey ()
 - Windows 10 (laptop)
 
-### Installation
-- Download Python 3.7.4 and install it https://www.python.org/downloads/
-- In cmd / terminal run
+### Installation for MacOs
+- in terminal run 
 
 ```
-pip3 install wxPython
+./install.sh
 ```
-
-- Check wxPython version in Python 3 console
-
-```
-python3
-```
-
-then
-```
-import wc
-```
-
-then
-```
-wx.version()
-```
-
-should be at least 4.0.6 
-
-And finally
-```
-pip3 install ObjectListView
-```
-
 
 ### Running
 - Clone to a specific directory
 - Set the variables in settings.ini - timeout (in minutes), and whether you want to log breaks or not. If you want to log taking breaks, create empty logs directory in the folder containing the app
-- Create directory 'logs'
-- Run cmd/terminal
+- Run terminal
 - Run 
 ```
-python3 %path_to_app%/SimpleBreakReminder/break_reminder.py
+./run.sh
 ```
 
 
